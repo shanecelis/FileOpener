@@ -1,0 +1,16 @@
+{
+    "name": "SeawispHunter.FileOpener.Editor",
+    "references": [
+        "SeawispHunter.FileOpener"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

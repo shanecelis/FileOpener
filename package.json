@@ -1,0 +1,28 @@
+{
+  "name": "com.seawisphunter.fileopener",
+  "version": "0.1.1-preview",
+  "displayName": "Seawisp Hunter FileOpener",
+  "description": "Lorem ipsum description.",
+  "unity": "2018.3",
+  "type": "library",
+  "author": {
+    "name": "Shane Celis",
+    "email": "support@seawisphunter.com",
+    "url": "https://seawisphunter.com"
+  },
+  "dependencies": { },
+  "license": "Undeclared",
+  "keywords": [
+    "unity"
+  ],
+  "samples": [
+    {
+      "displayName": "Sample 1",
+      "path": "Samples~/Sample 1"
+    },
+    {
+      "displayName": "Sample 2",
+      "path": "Samples~/Sample 2"
+    }
+  ]
+}

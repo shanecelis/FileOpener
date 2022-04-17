@@ -1,0 +1,19 @@
+{
+    "name": "SeawispHunter.FileOpener.Editor.Tests",
+    "references": [
+        "SeawispHunter.FileOpener",
+        "SeawispHunter.FileOpener.Editor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
