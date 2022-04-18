@@ -1,3 +1,4 @@
+//#define DEBUG_FILE_OPENER
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
@@ -19,11 +20,11 @@ class FileOpenerSettings : ScriptableObject {
       [Header("Absolute path to the executable")]
       public string executablePath;
       [Header("Substitutions available: {filePath}")]
-      public string argumentFormat0 = "{filePath}";
+      public string argumentFormat0 = "\"{filePath}\"";
       [Header("Substitutions available: {filePath} and {line}")]
-      public string argumentFormat1 = "{filePath}";
+      public string argumentFormat1 = "\"{filePath}\"";
       [Header("Substitutions available: {filePath}, {line}, and {column}")]
-      public string argumentFormat2 = "{filePath}";
+      public string argumentFormat2 = "\"{filePath}\"";
       [Header("Semi-colon separated list of extensions this opener will accept")]
       public string fileExtensions = "cs;txt";
       [System.NonSerialized]
@@ -50,16 +51,16 @@ class FileOpenerSettings : ScriptableObject {
     public List<Opener> openers = new List<Opener> {
               new Opener { name = "Emacs",
                            executablePath = "/usr/local/bin/emacsclient",
-                           argumentFormat0 = "-n {filePath}",
-                           argumentFormat1 = "-n +{line} {filePath}",
-                           argumentFormat2 = "-n +{line}:{column} {filePath}",
+                           argumentFormat0 = "-n \"{filePath}\"",
+                           argumentFormat1 = "-n +{line} \"{filePath}\"",
+                           argumentFormat2 = "-n +{line}:{column} \"{filePath}\"",
                            fileExtensions = "cs;txt;js;javascript;json;html;shader;template",
               },
               new Opener { name = "vim",
                            executablePath = "/usr/local/bin/mvim",
-                           argumentFormat0 = "{filePath}",
-                           argumentFormat1 = "+{line} {filePath}",
-                           argumentFormat2 = "-c \"call cursor({line},{column})\" {filePath}",
+                           argumentFormat0 = "\"{filePath}\"",
+                           argumentFormat1 = "+{line} \"{filePath}\"",
+                           argumentFormat2 = "-c \"call cursor({line},{column})\" \"{filePath}\"",
                            fileExtensions = "cs;txt;js;javascript;json;html;shader;template",
               },
     };
@@ -105,6 +106,8 @@ static class FileOpenerSettingsIMGUIRegister {
             label = "File Opener",
             // Create the SettingsProvider and initialize its drawing (IMGUI) function in place:
             guiHandler = (searchContext) => {
+
+              EditorGUILayout.LabelField("A file opener for Unity3d's editor, ensures Emacs and vim will go to the right line and column, if that information is available.", EditorStyles.wordWrappedLabel);
                 var settings = FileOpenerSettings.GetSerializedSettings();
                 EditorGUILayout.PropertyField(settings.FindProperty("enabled"), new GUIContent("Enabled"));
                 EditorGUILayout.PropertyField(settings.FindProperty("openers"), new GUIContent("Openers"), true);
@@ -168,13 +171,15 @@ static class FileOpenerSettingsIMGUIRegister {
       };
       proc.Start();
 
+#if DEBUG_FILE_OPENER
       Debug.Log($"FileOpener: file \"{selectedFilePath}\" opened with {opener.name}.");
+#endif
       return true;
     }
     }
+#if DEBUG_FILE_OPENER
       Debug.Log($"FileOpener: no opener found for file \"{selectedFilePath}\"; use default opener.");
-
-    // Debug.LogWarning("Letting Unity handle opening of script instead of Emacs.");
+#endif
     return false;
   }
 }
