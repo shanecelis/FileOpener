@@ -13,16 +13,40 @@ class FileOpenerSettings : ScriptableObject {
 
     [System.Serializable]
     public class Opener {
-
-      public string name = "emacs";
+      [Header("Name is purely descriptive (like a comment).")]
+      public string name;
       public bool enabled = false;
-      public string executablePath = "/usr/local/Cellar/emacs-mac/emacs-28.1-mac-9.0/bin/emacsclient";
-      public string[] fileExtensions = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" };
-      public string argumentFormat = "-n +{line}:{column} {filePath}";
+      [Header("Absolute path to the executable.")]
+      public string executablePath;
+      [Header("Substitutions available: {filePath}, {line}, and {column}")]
+      public string argumentFormat = "{filePath}";
+      [Header("The following extensions will be sent to this program.")]
+      public string fileExtensions = "cs;txt";
+      [System.NonSerialized]
+      private string[] _fileExtensionsArray;// = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" };
+      public string[] fileExtensionsArray {
+        get {
+          if (_fileExtensionsArray == null)
+            _fileExtensionsArray = fileExtensions.ToLower().Split(';');
+          return _fileExtensionsArray;
+        }
+      }
     }
 
+    [Header("The first enabled opener that matches an opened file's extension, will be executed.")]
     [SerializeField]
-    public List<Opener> openers;
+    public List<Opener> openers = new List<Opener> {
+              new Opener { name = "Emacs",
+                           executablePath = "/usr/local/bin/emacsclient",
+                           argumentFormat = "-n +{line}:{column} {filePath}",
+                           fileExtensions = "cs;txt;js;javascript;json;html;shader;template",
+              },
+              new Opener { name = "vim",
+                           executablePath = "/usr/local/bin/mvim",
+                           argumentFormat = "-c \"call cursor({line},{column})\" {filePath}",
+                           fileExtensions = "cs;txt;js;javascript;json;html;shader;template",
+              },
+    };
 
     internal static FileOpenerSettings settings = null;
 
@@ -40,16 +64,9 @@ class FileOpenerSettings : ScriptableObject {
               new Opener { name = "Emacs",
                 
                            executablePath = "/usr/local/bin/emacsclient",
-                           fileExtensions = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" },
                            // argumentFormat = "-n {{#line}}+line
               },
               
-              new Opener { name = "vim",
-                           executablePath = "/usr/bin/vim",
-                           fileExtensions = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" },
-                           argumentFormat = "-c \"call cursor({line},{column})\" {filePath}",
-                           // argumentFormat = "-n {{#line}}+line
-              },
             };
             AssetDatabase.CreateAsset(settings, FileOpenerSettingsPath);
             AssetDatabase.SaveAssets();
@@ -93,11 +110,13 @@ static class FileOpenerSettingsIMGUIRegister {
       return false;
     UnityEngine.Object selected = EditorUtility.InstanceIDToObject(instanceID);
     string selectedFilePath = AssetDatabase.GetAssetPath(selected);
-    string selectedFileExt = (Path.GetExtension(selectedFilePath) ?? "").ToLower();
+    string selectedFileExt = (Path.GetExtension(selectedFilePath) ?? "")
+      .ToLower()
+      .TrimStart('.');
 
     foreach (var opener in settings.openers) {
       if (opener.enabled &&
-        opener.fileExtensions.Contains(selectedFileExt)) {
+        opener.fileExtensionsArray.Contains(selectedFileExt)) {
 
       string projectPath = Path.GetDirectoryName(UnityEngine.Application.dataPath);
       string absoluteFilePath = Path.Combine(projectPath, selectedFilePath);
