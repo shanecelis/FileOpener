@@ -1,66 +1,63 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-// Create a new type of Settings Asset.
-class MyCustomSettings : ScriptableObject
-{
-    public const string k_MyCustomSettingsPath = "Assets/Editor/MyCustomSettings.asset";
+class FileOpenerSettings : ScriptableObject {
+    public const string FileOpenerSettingsPath = "ProjectSettings/FileOpenerSettings.asset";
 
     [SerializeField]
-    private int m_Number;
+    public bool enabled = true;
+
+    [System.Serializable]
+    public class Opener {
+      [SerializeField]
+      public string executablePath = "/usr/local/Cellar/emacs-mac/emacs-28.1-mac-9.0/bin/emacsclient";
+      [SerializeField]
+      public string[] fileExtensions = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" };
+      public string executableFormat = "{executablePath} -n +{line} {filePath}";
+    }
 
     [SerializeField]
-    private string m_SomeString;
+    public List<Opener> openers;
 
-    internal static MyCustomSettings GetOrCreateSettings()
-    {
-        var settings = AssetDatabase.LoadAssetAtPath<MyCustomSettings>(k_MyCustomSettingsPath);
-        if (settings == null)
-        {
-            settings = ScriptableObject.CreateInstance<MyCustomSettings>();
-            settings.m_Number = 42;
-            settings.m_SomeString = "The answer to the universe";
-            AssetDatabase.CreateAsset(settings, k_MyCustomSettingsPath);
+    internal static FileOpenerSettings GetOrCreateSettings() {
+        var settings = AssetDatabase.LoadAssetAtPath<FileOpenerSettings>(FileOpenerSettingsPath);
+        if (settings == null) {
+            settings = ScriptableObject.CreateInstance<FileOpenerSettings>();
+            settings.openers = new List<Opener> {
+              new Opener { }
+            };
+            AssetDatabase.CreateAsset(settings, FileOpenerSettingsPath);
             AssetDatabase.SaveAssets();
         }
         return settings;
     }
 
-    internal static SerializedObject GetSerializedSettings()
-    {
+    internal static SerializedObject GetSerializedSettings() {
         return new SerializedObject(GetOrCreateSettings());
     }
 }
 
-// Register a SettingsProvider using IMGUI for the drawing framework:
-static class MyCustomSettingsIMGUIRegister
-{
+static class FileOpenerSettingsIMGUIRegister {
     [SettingsProvider]
-    public static SettingsProvider CreateMyCustomSettingsProvider()
-    {
+    public static SettingsProvider CreateFileOpenerSettingsProvider() {
         // First parameter is the path in the Settings window.
         // Second parameter is the scope of this setting: it only appears in the Project Settings window.
-        var provider = new SettingsProvider("Project/MyCustomIMGUISettings", SettingsScope.Project)
-        {
+        var provider = new SettingsProvider("Project/File Opener", SettingsScope.Project) {
             // By default the last token of the path is used as display name if no label is provided.
-            label = "Custom IMGUI",
+            label = "File Opener",
             // Create the SettingsProvider and initialize its drawing (IMGUI) function in place:
-            guiHandler = (searchContext) =>
-            {
-                var settings = MyCustomSettings.GetSerializedSettings();
-                EditorGUILayout.PropertyField(settings.FindProperty("m_Number"), new GUIContent("My Number"));
-                EditorGUILayout.PropertyField(settings.FindProperty("m_SomeString"), new GUIContent("My String"));
+            guiHandler = (searchContext) => {
+                var settings = FileOpenerSettings.GetSerializedSettings();
+                EditorGUILayout.PropertyField(settings.FindProperty("openers"), new GUIContent("Openers"));
+                // EditorGUILayout.PropertyField(settings.FindProperty("m_SomeString"), new GUIContent("My String"));
                 settings.ApplyModifiedProperties();
             },
 
             // Populate the search keywords to enable smart search filtering and label highlighting:
             keywords = new HashSet<string>(new[] { "Number", "Some String" })
         };
-
         return provider;
     }
 }
