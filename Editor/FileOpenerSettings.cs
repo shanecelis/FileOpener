@@ -13,10 +13,10 @@ class FileOpenerSettings : ScriptableObject {
 
     [System.Serializable]
     public class Opener {
-      [Header("Name is purely descriptive (like a comment).")]
+      [Header("Name is purely descriptive (like a comment)")]
       public string name;
       public bool enabled = false;
-      [Header("Absolute path to the executable.")]
+      [Header("Absolute path to the executable")]
       public string executablePath;
       [Header("Substitutions available: {filePath}")]
       public string argumentFormat0 = "{filePath}";
@@ -24,7 +24,7 @@ class FileOpenerSettings : ScriptableObject {
       public string argumentFormat1 = "{filePath}";
       [Header("Substitutions available: {filePath}, {line}, and {column}")]
       public string argumentFormat2 = "{filePath}";
-      [Header("Semi-colon separated list of extensions this program will accept.")]
+      [Header("Semi-colon separated list of extensions this opener will accept")]
       public string fileExtensions = "cs;txt";
       [System.NonSerialized]
       private string[] _fileExtensionsArray;// = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" };
@@ -80,6 +80,9 @@ class FileOpenerSettings : ScriptableObject {
         settings = AssetDatabase.LoadAssetAtPath<FileOpenerSettings>(FileOpenerSettingsPath);
         if (settings == null) {
             settings = ScriptableObject.CreateInstance<FileOpenerSettings>();
+            var dirName = Path.GetDirectoryName(FileOpenerSettingsPath);
+            if (! AssetDatabase.IsValidFolder(dirName))
+              AssetDatabase.CreateFolder(dirName);
             AssetDatabase.CreateAsset(settings, FileOpenerSettingsPath);
             AssetDatabase.SaveAssets();
         }

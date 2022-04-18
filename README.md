@@ -9,7 +9,7 @@ Lorem ipsum description.
 * Unity 2018.3 or later
 
 ```
-$ git clone https://github.com/SeawispHunter/FileOpener.git
+$ git clone https://github.com/shanecelis/FileOpener.git
 ```
 
 ### Usage
@@ -18,15 +18,15 @@ Find the `manifest.json` file in the `Packages` directory in your project and ed
 ```
 {
   "dependencies": {
-    "com.seawisphunter.fileopener": "https://github.com/SeawispHunter/FileOpener.git",
+    "com.seawisphunter.fileopener": "https://github.com/shanecelis/FileOpener.git",
     ...
   },
 }
 ```
-To select a particular version of the package, add the suffix `#{git-tag}`.
 
-* e.g. `"com.seawisphunter.fileopener": "https://github.com/SeawispHunter/FileOpener.git#1.2.0"`
+## License
 
+This project is released under the MIT license.
 
 ## Acknowledgements
 
