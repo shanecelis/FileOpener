@@ -18,9 +18,13 @@ class FileOpenerSettings : ScriptableObject {
       public bool enabled = false;
       [Header("Absolute path to the executable.")]
       public string executablePath;
+      [Header("Substitutions available: {filePath}")]
+      public string argumentFormat0 = "{filePath}";
+      [Header("Substitutions available: {filePath} and {line}")]
+      public string argumentFormat1 = "{filePath}";
       [Header("Substitutions available: {filePath}, {line}, and {column}")]
-      public string argumentFormat = "{filePath}";
-      [Header("The following extensions will be sent to this program.")]
+      public string argumentFormat2 = "{filePath}";
+      [Header("Semi-colon separated list of extensions this program will accept.")]
       public string fileExtensions = "cs;txt";
       [System.NonSerialized]
       private string[] _fileExtensionsArray;// = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" };
@@ -31,6 +35,14 @@ class FileOpenerSettings : ScriptableObject {
           return _fileExtensionsArray;
         }
       }
+      public void ClearCache() {
+        _fileExtensionsArray = null;
+      }
+    }
+
+    public void ClearCache() {
+      foreach (var opener in openers)
+        opener.ClearCache();
     }
 
     [Header("The first enabled opener that matches an opened file's extension, will be executed.")]
@@ -38,12 +50,16 @@ class FileOpenerSettings : ScriptableObject {
     public List<Opener> openers = new List<Opener> {
               new Opener { name = "Emacs",
                            executablePath = "/usr/local/bin/emacsclient",
-                           argumentFormat = "-n +{line}:{column} {filePath}",
+                           argumentFormat0 = "-n {filePath}",
+                           argumentFormat1 = "-n +{line} {filePath}",
+                           argumentFormat2 = "-n +{line}:{column} {filePath}",
                            fileExtensions = "cs;txt;js;javascript;json;html;shader;template",
               },
               new Opener { name = "vim",
                            executablePath = "/usr/local/bin/mvim",
-                           argumentFormat = "-c \"call cursor({line},{column})\" {filePath}",
+                           argumentFormat0 = "{filePath}",
+                           argumentFormat1 = "+{line} {filePath}",
+                           argumentFormat2 = "-c \"call cursor({line},{column})\" {filePath}",
                            fileExtensions = "cs;txt;js;javascript;json;html;shader;template",
               },
     };
@@ -51,8 +67,12 @@ class FileOpenerSettings : ScriptableObject {
     internal static FileOpenerSettings settings = null;
 
     [InitializeOnEnterPlayMode]
-    void Clear() {
+    static void ResetSingleton() {
       settings = null;
+    }
+
+    void Reset() {
+      ResetSingleton();
     }
 
     internal static FileOpenerSettings GetOrCreateSettings() {
@@ -60,14 +80,6 @@ class FileOpenerSettings : ScriptableObject {
         settings = AssetDatabase.LoadAssetAtPath<FileOpenerSettings>(FileOpenerSettingsPath);
         if (settings == null) {
             settings = ScriptableObject.CreateInstance<FileOpenerSettings>();
-            settings.openers = new List<Opener> {
-              new Opener { name = "Emacs",
-                
-                           executablePath = "/usr/local/bin/emacsclient",
-                           // argumentFormat = "-n {{#line}}+line
-              },
-              
-            };
             AssetDatabase.CreateAsset(settings, FileOpenerSettingsPath);
             AssetDatabase.SaveAssets();
         }
@@ -94,7 +106,13 @@ static class FileOpenerSettingsIMGUIRegister {
                 EditorGUILayout.PropertyField(settings.FindProperty("enabled"), new GUIContent("Enabled"));
                 EditorGUILayout.PropertyField(settings.FindProperty("openers"), new GUIContent("Openers"), true);
                 // EditorGUILayout.PropertyField(settings.FindProperty("m_SomeString"), new GUIContent("My String"));
-                settings.ApplyModifiedProperties();
+                // Might be nice to have a reset button.
+                EditorGUILayout.HelpBox($"These settings are stored in \"{FileOpenerSettings.FileOpenerSettingsPath}\". Resetting that asset will restore the original settings.", MessageType.Info);
+
+                if (settings.ApplyModifiedProperties()) {
+                  var _settings = (FileOpenerSettings) settings.targetObject;
+                  _settings.ClearCache();
+                }
             },
 
             // Populate the search keywords to enable smart search filtering and label highlighting:
@@ -102,8 +120,9 @@ static class FileOpenerSettingsIMGUIRegister {
         };
         return provider;
     }
+  private static string[] argumentFormats = new string[3];
 
-  [OnOpenAsset]
+  [OnOpenAsset(0)]
   public static bool OnOpenedAsset(int instanceID, int line, int column) {
     var settings = FileOpenerSettings.GetOrCreateSettings();
     if (settings != null && ! settings.enabled)
@@ -120,13 +139,18 @@ static class FileOpenerSettingsIMGUIRegister {
 
       string projectPath = Path.GetDirectoryName(UnityEngine.Application.dataPath);
       string absoluteFilePath = Path.Combine(projectPath, selectedFilePath);
-      string arguments = opener.argumentFormat;
-      if (line < 0)
-        line = 1;
-      if (column < 0)
-        column = 1;
-      arguments = arguments.Replace("{line}", line.ToString());
-      arguments = arguments.Replace("{column}", column.ToString());
+      string arguments = opener.argumentFormat0;
+      if (line >= 0) {
+        // There is a line argument.
+        if (column < 0) {
+        // There is no column argument.
+          arguments = opener.argumentFormat1;
+        } else {
+          arguments = opener.argumentFormat2;
+          arguments = arguments.Replace("{column}", column.ToString());
+        }
+        arguments = arguments.Replace("{line}", line.ToString());
+      }
       arguments = arguments.Replace("{filePath}", absoluteFilePath);
 
       var proc = new System.Diagnostics.Process {
@@ -140,9 +164,12 @@ static class FileOpenerSettingsIMGUIRegister {
         }
       };
       proc.Start();
+
+      Debug.Log($"FileOpener: file \"{selectedFilePath}\" opened with {opener.name}.");
       return true;
     }
     }
+      Debug.Log($"FileOpener: no opener found for file \"{selectedFilePath}\"; use default opener.");
 
     // Debug.LogWarning("Letting Unity handle opening of script instead of Emacs.");
     return false;
