@@ -1,9 +1,9 @@
 {
   "name": "com.seawisphunter.fileopener",
   "version": "0.1.1-preview",
-  "displayName": "Seawisp Hunter FileOpener",
-  "description": "Lorem ipsum description.",
-  "unity": "2018.3",
+  "displayName": "FileOpener",
+  "description": "A file opener for Unity3d's editor, ensures Emacs and vim go to the right line and column",
+  "unity": "2019.4",
   "type": "library",
   "author": {
     "name": "Shane Celis",
@@ -11,18 +11,18 @@
     "url": "https://seawisphunter.com"
   },
   "dependencies": { },
-  "license": "Undeclared",
+  "license": "MIT",
   "keywords": [
     "unity"
   ],
   "samples": [
-    {
-      "displayName": "Sample 1",
-      "path": "Samples~/Sample 1"
-    },
-    {
-      "displayName": "Sample 2",
-      "path": "Samples~/Sample 2"
-    }
+    // {
+    //   "displayName": "Sample 1",
+    //   "path": "Samples~/Sample 1"
+    // },
+    // {
+    //   "displayName": "Sample 2",
+    //   "path": "Samples~/Sample 2"
+    // }
   ]
 }
