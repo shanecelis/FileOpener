@@ -82,7 +82,7 @@ class FileOpenerSettings : ScriptableObject {
             settings = ScriptableObject.CreateInstance<FileOpenerSettings>();
             var dirName = Path.GetDirectoryName(FileOpenerSettingsPath);
             if (! AssetDatabase.IsValidFolder(dirName))
-              AssetDatabase.CreateFolder(dirName);
+              AssetDatabase.CreateFolder(Path.GetDirectoryName(dirName), Path.GetFileName(dirName));
             AssetDatabase.CreateAsset(settings, FileOpenerSettingsPath);
             AssetDatabase.SaveAssets();
         }
