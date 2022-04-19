@@ -1,10 +1,9 @@
 //#define DEBUG_FILE_OPENER
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEngine;
 
 class FileOpenerSettings : ScriptableObject {
     public const string FileOpenerSettingsPath = "Assets/Settings/FileOpenerSettings.asset";
@@ -28,16 +27,16 @@ class FileOpenerSettings : ScriptableObject {
       [Header("Semi-colon separated list of extensions this opener will accept")]
       public string fileExtensions = "cs;txt";
       [System.NonSerialized]
-      private string[] _fileExtensionsArray;// = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" };
-      public string[] fileExtensionsArray {
+      private HashSet<string> _fileExtensionsSet;// = new [] { ".cs", ".txt", ".js", ".javascript", ".json", ".html", ".shader", ".template" };
+      public HashSet<string> fileExtensionsSet {
         get {
-          if (_fileExtensionsArray == null)
-            _fileExtensionsArray = fileExtensions.ToLower().Split(';');
-          return _fileExtensionsArray;
+          if (_fileExtensionsSet == null)
+            _fileExtensionsSet = new HashSet<string>(fileExtensions.ToLower().Split(';'));
+          return _fileExtensionsSet;
         }
       }
       public void ClearCache() {
-        _fileExtensionsArray = null;
+        _fileExtensionsSet = null;
       }
     }
 
@@ -141,7 +140,7 @@ static class FileOpenerSettingsIMGUIRegister {
 
     foreach (var opener in settings.openers) {
       if (opener.enabled &&
-        opener.fileExtensionsArray.Contains(selectedFileExt)) {
+        opener.fileExtensionsSet.Contains(selectedFileExt)) {
 
       string projectPath = Path.GetDirectoryName(UnityEngine.Application.dataPath);
       string absoluteFilePath = Path.Combine(projectPath, selectedFilePath);
