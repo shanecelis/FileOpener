@@ -6,9 +6,18 @@ A file opener for Unity3d's editor.
 
 Ensure Emacs and vim go to the right line and column if that information is available. It is of course not restricted to use with any particular editor or program.
 
-### Requirements
+### Problem
+
+It often seemed like the line and column information might not be passed along, or that a new process of my selected application would be spun up and fight for control over the file already being edited. 
+
+### Solution
+
+This package provides more control over the opening of the files you want. Any files not specified by their extensions will be opened by Unity by whatever means is specified in the External Tools panel in Preferences.
+
+## Requirements
 
 * Unity 2019.4 or later
+* The will to edit on a non-sanctioned editor
 
 ## Installation
 
@@ -23,6 +32,12 @@ https://github.com/shanecelis/FileOpener.git
 Open project settings. You will find a "File Opener" section.
 
 ![screenshot 0](Documentation~/screenshot0.png)
+
+Set up as you like. Double check the paths are correct on your computer. 
+
+## TODO
+
+* Add default paths for Windows and other platforms
 
 ## License
 
