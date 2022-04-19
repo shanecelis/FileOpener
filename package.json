@@ -1,7 +1,7 @@
 {
   "name": "com.seawisphunter.fileopener",
   "version": "0.1.1-preview",
-  "displayName": "FileOpener",
+  "displayName": "File Opener",
   "description": "A file opener for Unity3d's editor, ensures Emacs and vim go to the right line and column",
   "unity": "2019.4",
   "type": "library",

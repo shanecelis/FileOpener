@@ -22,6 +22,8 @@ https://github.com/shanecelis/FileOpener.git
 
 Open project settings. You will find a "File Opener" section.
 
+![screenshot 0](Documentation~/screenshot0.png)
+
 ## License
 
 This project is released under the MIT license.

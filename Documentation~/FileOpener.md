@@ -1,3 +1,3 @@
 # FileOpener Documentation
 
-TODO: Add documentation.
+See README.
