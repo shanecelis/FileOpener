@@ -49,6 +49,6 @@ This project is released under the MIT license.
 
 ## Acknowledgements
 
-Many thanks to [Juan Karlo](https://twitter.com/accidentalrebel) for his [blog post](https://www.accidentalrebel.com/opening-unity-script-files-in-emacs.html) and [code](https://gist.github.com/accidentalrebel/69ac38f729e72c170a8d091b4daaec52) that showed me this was even possible.
+Many thanks to [Juan Karlo Licudine](https://twitter.com/accidentalrebel) for his [blog post](https://www.accidentalrebel.com/opening-unity-script-files-in-emacs.html) and [code](https://gist.github.com/accidentalrebel/69ac38f729e72c170a8d091b4daaec52) that showed me this was even possible.
 
 This package template was originally generated from [Shane Celis](https://twitter.com/shanecelis)'s [unity-package-template](https://github.com/shanecelis/unity-package-template).

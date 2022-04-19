@@ -1,4 +1,4 @@
-/* Original code[1] Copyright (c) 2018 Juan Karlo[2]
+/* Original code[1] Copyright (c) 2018 Juan Karlo Licudine[2]
    Modified code[3] Copyright (c) 2022 Shane Celis[4]
    Licensed under the MIT License[5]
 
