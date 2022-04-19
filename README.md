@@ -37,7 +37,11 @@ Set up as you like. Double check the paths are correct on your computer.
 
 ## TODO
 
-* Add default paths for Windows and other platforms
+* Add default paths for Windows and other platforms.
+
+* Let user place settings.
+
+  Settings currently kept at hard coded path `Assets/Settings/FileOpenerSettings.asset`
 
 ## License
 
